@@ -1,0 +1,59 @@
+version: '3.3'
+services:
+  api:
+    build:
+      context: ../
+      dockerfile: ./docker/local.api.Dockerfile
+    volumes:
+      - ../:/home/nodejs/app
+    restart: always
+    ports:
+      - ${PORT:-4000}:4000
+    networks:
+      - container_link
+  db:
+    image: postgres:10
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - container_link
+    volumes:
+      - ./postgres:/data/postgres
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - container_link
+    logging:
+      driver: "none"
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - ${PGADMIN_PORT:-5050}:80
+    networks:
+      - container_link
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=redis
+    ports:
+      - ${REDIS_COMMANDER:-8081}:8081
+    networks:
+      - container_link
+
+volumes:
+  pgadmin:
+
+networks:
+  container_link:
+    external: false
