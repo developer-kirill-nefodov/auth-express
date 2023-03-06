@@ -2,7 +2,7 @@
 
 Git clone project
 ```
-git clone https://github.com/developer-kirill-nefodov/AuthExpress.git
+git clone https://github.com/developer-kirill-nefodov/auth-express.git
 
 cd ./AuthExpress/
 ```
